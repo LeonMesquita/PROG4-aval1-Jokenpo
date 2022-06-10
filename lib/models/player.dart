@@ -16,17 +16,14 @@ class Player {
 
   void incrementPoints() {
     matchesWon++;
+    selectedStones = 0;
   }
 
   void incrementStones() {
     selectedStones++;
   }
 
-  void resetStones() {
-    selectedStones = 0;
-  }
-
-  bool checkStonesPlayed() {
+  bool playedTwoStones() {
     if (selectedStones >= 2) {
       selectedStones = 0;
       return true;

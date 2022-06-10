@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+const kInitialScreenTextStyle = TextStyle(
+  fontSize: 45,
+  fontWeight: FontWeight.bold,
+  color: Colors.white,
+);
+
 const kGameTextStyle = TextStyle(
   fontSize: 20,
   fontWeight: FontWeight.bold,

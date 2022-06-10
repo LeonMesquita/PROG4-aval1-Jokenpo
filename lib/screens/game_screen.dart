@@ -56,26 +56,42 @@ class _GameScreenState extends State<GameScreen> {
       if ((playerPlay == "pedra" && machinePlay == "tesoura") ||
           (playerPlay == "papel" && machinePlay == "pedra") ||
           (playerPlay == "tesoura" && machinePlay == "papel")) {
-        player.resetStones();
         player.incrementPoints();
         result = kVictoryMessage;
       } else if (playerPlay == machinePlay) {
-        if (playerPlay == "pedra") {
-          player.incrementStones();
-          result = player.checkStonesPlayed() ? "Você perdeu! :(" : "Empate!";
-        } else if (machinePlay == "pedra") {
-          machine.incrementStones();
-          result = player.checkStonesPlayed() ? "Você venceu! :)" : "Empate!";
+        if (playerPlay == "pedra" || machinePlay == "pedra") {
+          result = checkTie(playerPlay, machinePlay);
         } else {
           result = "Empate!";
         }
       } else {
-        machine.resetStones();
         machine.incrementPoints();
         result = kDefeatMessage;
       }
     });
+    return result;
+  }
 
+  String checkTie(playerPlay, machinePlay) {
+    String result = "";
+    if (playerPlay == "pedra") {
+      player.incrementStones();
+    }
+    if (machinePlay == "pedra") {
+      machine.incrementStones();
+    }
+    //
+    if (player.playedTwoStones() && machine.playedTwoStones()) {
+      result = "Ambos perderam!";
+    } else if (player.playedTwoStones()) {
+      result = kDefeatMessage;
+      machine.incrementPoints();
+    } else if (machine.playedTwoStones()) {
+      result = kVictoryMessage;
+      player.incrementPoints();
+    } else {
+      result = "Empate";
+    }
     return result;
   }
 
@@ -158,7 +174,7 @@ class _GameScreenState extends State<GameScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Container(
+                  child: SizedBox(
                     width: size.width,
                     height: 50,
                     child: ElevatedButton(

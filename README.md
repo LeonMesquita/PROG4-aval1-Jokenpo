@@ -1,4 +1,4 @@
-Alunos:
+Grupo:
 
 Leonardo Evangelista Mesquita
 

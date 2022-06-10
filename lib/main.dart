@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prog4_aval1_jokenpo/screens/game_screen.dart';
+import 'package:prog4_aval1_jokenpo/screens/initial_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.purple,
       ),
-      home: const GameScreen(),
+      home: const InitialScreen(),
     );
   }
 }
