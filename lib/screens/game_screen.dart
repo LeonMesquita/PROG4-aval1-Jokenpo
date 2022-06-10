@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:prog4_aval1_jokenpo/constantes.dart';
+import 'package:prog4_aval1_jokenpo/constants.dart';
 import 'package:prog4_aval1_jokenpo/models/player.dart';
 import 'dart:math';
+
+import '../widgets/play_button.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({Key? key}) : super(key: key);
@@ -16,13 +18,17 @@ class _GameScreenState extends State<GameScreen> {
   List<String> plays = [kStone, kPaper, kScissor];
   Player player = Player();
   Player machine = Player();
-  String machineImage = 'assets/images/interrog.png';
-  String machineLabel = "Máquina";
-  String playerLabel = 'Escolha uma jogada:';
+  String machineImage = kInterrogImage;
+  String machineLabel = kMachineLabel;
+  String playerLabel = kPlayerLabel;
+
+  String selectedButton = "";
 
   void selectPlay(play) {
     String selectedPlay = setPlayName(play);
     setState(() {
+      selectedButton = play;
+
       player.setPlay(selectedPlay);
       plays.shuffle();
       String machinePlay = setPlayName(plays[0]);
@@ -52,7 +58,7 @@ class _GameScreenState extends State<GameScreen> {
           (playerPlay == "tesoura" && machinePlay == "papel")) {
         player.resetStones();
         player.incrementPoints();
-        result = "Você venceu! :)";
+        result = kVictoryMessage;
       } else if (playerPlay == machinePlay) {
         if (playerPlay == "pedra") {
           player.incrementStones();
@@ -66,11 +72,22 @@ class _GameScreenState extends State<GameScreen> {
       } else {
         machine.resetStones();
         machine.incrementPoints();
-        result = "Você perdeu! :(";
+        result = kDefeatMessage;
       }
     });
 
     return result;
+  }
+
+  void resetGame() {
+    setState(() {
+      player = Player();
+      machine = Player();
+      machineLabel = kMachineLabel;
+      playerLabel = kPlayerLabel;
+      machineImage = kInterrogImage;
+      selectedButton = "";
+    });
   }
 
   @override
@@ -84,13 +101,14 @@ class _GameScreenState extends State<GameScreen> {
       body: Column(
         children: [
           Padding(
-            padding: EdgeInsets.only(top: 30),
+            padding: const EdgeInsets.only(top: 30),
             child: Text(
               machineLabel,
               style: kGameTextStyle,
             ),
           ),
-          playButton(imagePath: machineImage, ontap: () {}),
+          playButton(
+              imagePath: machineImage, ontap: () {}, color: kStandardColor),
           Text(
             playerLabel,
             style: kGameTextStyle,
@@ -101,16 +119,23 @@ class _GameScreenState extends State<GameScreen> {
             children: [
               playButton(
                   imagePath: kStone,
+                  color:
+                      selectedButton == kStone ? kActiveColor : kStandardColor,
                   ontap: () {
                     selectPlay(kStone);
                   }),
               playButton(
                   imagePath: kPaper,
+                  color:
+                      selectedButton == kPaper ? kActiveColor : kStandardColor,
                   ontap: () {
                     selectPlay(kPaper);
                   }),
               playButton(
                   imagePath: kScissor,
+                  color: selectedButton == kScissor
+                      ? kActiveColor
+                      : kStandardColor,
                   ontap: () {
                     selectPlay(kScissor);
                   }),
@@ -120,9 +145,15 @@ class _GameScreenState extends State<GameScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Text('Partidas ganhas pelo jogador: ${player.getPoints()}'),
-                Text('Partidas ganhas pela máquina: ${machine.getPoints()}'),
-                SizedBox(
+                Text(
+                  'Partidas ganhas pelo jogador: ${player.getPoints()}',
+                  style: kGameTextStyle,
+                ),
+                Text(
+                  'Partidas ganhas pela máquina: ${machine.getPoints()}',
+                  style: kGameTextStyle,
+                ),
+                const SizedBox(
                   height: 50,
                 ),
                 Padding(
@@ -131,9 +162,9 @@ class _GameScreenState extends State<GameScreen> {
                     width: size.width,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: resetGame,
                       child: const Text(
-                        'Jogar',
+                        'Reiniciar',
                         style: TextStyle(
                           fontSize: 30,
                           fontWeight: FontWeight.bold,
@@ -149,25 +180,4 @@ class _GameScreenState extends State<GameScreen> {
       ),
     );
   }
-}
-
-Widget playButton({required String imagePath, required Function() ontap}) {
-  return Padding(
-    padding: const EdgeInsets.only(top: 30, bottom: 30),
-    child: GestureDetector(
-      onTap: ontap,
-      child: Container(
-        width: 100,
-        height: 100,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.blue,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: Image.asset(imagePath),
-        ),
-      ),
-    ),
-  );
 }

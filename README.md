@@ -2,6 +2,6 @@ Alunos:
 
 Leonardo Evangelista Mesquita
 
-Marcos Vinicuis dos Santos Dantas
+Marcos Vinicius dos Santos Dantas
 
 Arthur Oliveira de Souza
