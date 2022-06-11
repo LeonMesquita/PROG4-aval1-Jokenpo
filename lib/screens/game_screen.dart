@@ -3,6 +3,8 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:prog4_aval1_jokenpo/constants.dart';
 import 'package:prog4_aval1_jokenpo/models/player.dart';
+import 'package:prog4_aval1_jokenpo/widgets/placar_card.dart';
+import 'package:prog4_aval1_jokenpo/widgets/versus_cards.dart';
 import 'dart:math';
 
 import '../widgets/play_button.dart';
@@ -19,6 +21,8 @@ class _GameScreenState extends State<GameScreen> {
   Player player = Player();
   Player machine = Player();
   String machineImage = kInterrogImage;
+  String playerImage = kInterrogImage;
+
   String machineLabel = kMachineLabel;
   String playerLabel = kPlayerLabel;
   String selectedButton = "";
@@ -27,7 +31,7 @@ class _GameScreenState extends State<GameScreen> {
     String selectedPlay = setPlayName(play);
     setState(() {
       selectedButton = play;
-
+      playerImage = play;
       player.setPlay(selectedPlay);
       setMachinePlay();
       machineLabel = "Escolha do app:";
@@ -94,6 +98,7 @@ class _GameScreenState extends State<GameScreen> {
       machineLabel = kMachineLabel;
       playerLabel = kPlayerLabel;
       machineImage = kInterrogImage;
+      playerImage = kInterrogImage;
       selectedButton = "";
     });
   }
@@ -102,21 +107,12 @@ class _GameScreenState extends State<GameScreen> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Colors.grey.shade200,
       appBar: AppBar(
         title: const Text('jokenpô'),
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 30),
-            child: Text(
-              machineLabel,
-              style: kGameTextStyle,
-            ),
-          ),
-          playButton(
-              imagePath: machineImage, ontap: () {}, color: kStandardColor),
+          versusCards(playerImage: playerImage, machineImage: machineImage),
           Text(
             playerLabel,
             style: kGameTextStyle,
@@ -152,19 +148,15 @@ class _GameScreenState extends State<GameScreen> {
           ),
           Expanded(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Partidas ganhas pelo jogador: ${player.getPoints()}',
+                const Text(
+                  'Placar:',
                   style: kGameTextStyle,
                 ),
-                Text(
-                  'Partidas ganhas pela máquina: ${machine.getPoints()}',
-                  style: kGameTextStyle,
-                ),
-                const SizedBox(
-                  height: 50,
-                ),
+                placarCards(
+                    playerScore: player.getPoints(),
+                    machineScore: machine.getPoints()),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: SizedBox(

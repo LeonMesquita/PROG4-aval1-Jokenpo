@@ -23,5 +23,5 @@ const kDefeatMessage = "Você perdeu! :(";
 const kVictoryMessage = "Você venceu! :)";
 
 const kActiveColor = Color(0xff12f70e);
-//const kStandardColor = Colors.purple;
 const kStandardColor = Color(0xffae09f4);
+const kPlacarColor = Color.fromARGB(255, 6, 178, 201);
