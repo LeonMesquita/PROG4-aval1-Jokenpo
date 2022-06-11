@@ -21,7 +21,6 @@ class _GameScreenState extends State<GameScreen> {
   String machineImage = kInterrogImage;
   String machineLabel = kMachineLabel;
   String playerLabel = kPlayerLabel;
-
   String selectedButton = "";
 
   void selectPlay(play) {
@@ -30,11 +29,7 @@ class _GameScreenState extends State<GameScreen> {
       selectedButton = play;
 
       player.setPlay(selectedPlay);
-      plays.shuffle();
-      String machinePlay = setPlayName(plays[0]);
-      machineImage = plays[0];
-      machine.setPlay(machinePlay);
-      debugPrint(machine.getPlay());
+      setMachinePlay();
       machineLabel = "Escolha do app:";
       playerLabel = checkPlays(player.getPlay(), machine.getPlay());
     });
@@ -50,48 +45,45 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
+//Função que impede que a máquina escolha pedra duas vezes seguidas
+  void setMachinePlay() {
+    String machinePlay = "";
+
+    while (true) {
+      plays.shuffle();
+      machinePlay = setPlayName(plays[0]);
+      machineImage = plays[0];
+      if (machine.selectedStones < 1) {
+        machine.setPlay(machinePlay);
+        break;
+      } else if (machinePlay != "pedra") {
+        machine.setPlay(machinePlay);
+        machine.resetStonesCount();
+        break;
+      } else {}
+    }
+  }
+
   String checkPlays(playerPlay, machinePlay) {
     String result = "";
     setState(() {
-      if ((playerPlay == "pedra" && machinePlay == "tesoura") ||
-          (playerPlay == "papel" && machinePlay == "pedra") ||
-          (playerPlay == "tesoura" && machinePlay == "papel")) {
-        player.incrementPoints();
-        result = kVictoryMessage;
-      } else if (playerPlay == machinePlay) {
-        if (playerPlay == "pedra" || machinePlay == "pedra") {
-          result = checkTie(playerPlay, machinePlay);
-        } else {
-          result = "Empate!";
-        }
-      } else {
+      if (player.playedTwoStones()) {
+        result = "Você escolheu pedra duas vezes seguidas! O App venceu.";
         machine.incrementPoints();
-        result = kDefeatMessage;
+      } else {
+        if ((playerPlay == "pedra" && machinePlay == "tesoura") ||
+            (playerPlay == "papel" && machinePlay == "pedra") ||
+            (playerPlay == "tesoura" && machinePlay == "papel")) {
+          player.incrementPoints();
+          result = kVictoryMessage;
+        } else if (playerPlay == machinePlay) {
+          result = "Empate!";
+        } else {
+          machine.incrementPoints();
+          result = kDefeatMessage;
+        }
       }
     });
-    return result;
-  }
-
-  String checkTie(playerPlay, machinePlay) {
-    String result = "";
-    if (playerPlay == "pedra") {
-      player.incrementStones();
-    }
-    if (machinePlay == "pedra") {
-      machine.incrementStones();
-    }
-    //
-    if (player.playedTwoStones() && machine.playedTwoStones()) {
-      result = "Ambos perderam!";
-    } else if (player.playedTwoStones()) {
-      result = kDefeatMessage;
-      machine.incrementPoints();
-    } else if (machine.playedTwoStones()) {
-      result = kVictoryMessage;
-      player.incrementPoints();
-    } else {
-      result = "Empate";
-    }
     return result;
   }
 
@@ -128,6 +120,7 @@ class _GameScreenState extends State<GameScreen> {
           Text(
             playerLabel,
             style: kGameTextStyle,
+            textAlign: TextAlign.center,
           ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,

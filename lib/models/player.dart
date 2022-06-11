@@ -8,6 +8,11 @@ class Player {
 
   void setPlay(play) {
     selectedPlay = play;
+    if (play == "pedra") {
+      selectedStones++;
+    } else {
+      selectedStones = 0;
+    }
   }
 
   String getPlay() {
@@ -16,11 +21,14 @@ class Player {
 
   void incrementPoints() {
     matchesWon++;
-    selectedStones = 0;
   }
 
   void incrementStones() {
     selectedStones++;
+  }
+
+  void resetStonesCount() {
+    selectedStones = 0;
   }
 
   bool playedTwoStones() {
