@@ -1,62 +1,53 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:prog4_aval1_jokenpo/constants.dart';
+import 'package:prog4_aval1_jokenpo/models/play.dart';
 import 'package:prog4_aval1_jokenpo/models/player.dart';
 import 'package:prog4_aval1_jokenpo/widgets/placar_card.dart';
 import 'package:prog4_aval1_jokenpo/widgets/versus_cards.dart';
-import 'dart:math';
-
 import '../widgets/play_button.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({Key? key}) : super(key: key);
-
   @override
   State<GameScreen> createState() => _GameScreenState();
 }
 
 class _GameScreenState extends State<GameScreen> {
-  List<String> plays = [kStone, kPaper, kScissor];
+  List<Play> optionsList = [...options];
+  List<Play> plays = [...options];
   Player player = Player();
   Player machine = Player();
   String machineImage = kInterrogImage;
   String playerImage = kInterrogImage;
-
   String machineLabel = kMachineLabel;
-  String playerLabel = kPlayerLabel;
+  String resultLabel = kPlayerLabel;
   String selectedButton = "";
 
-  void selectPlay(play) {
-    String selectedPlay = setPlayName(play);
+  void selectPlay(playImage, playName) {
     setState(() {
-      selectedButton = play;
-      playerImage = play;
-      player.setPlay(selectedPlay);
+      selectedButton = playName;
+      playerImage = playImage;
+      player.setPlay(playName);
       setMachinePlay();
       machineLabel = "Escolha do app:";
-      playerLabel = checkPlays(player.getPlay(), machine.getPlay());
+      resultLabel = checkPlays(player.getPlay(), machine.getPlay());
     });
-  }
-
-  String setPlayName(play) {
-    if (play == kStone) {
-      return "pedra";
-    } else if (play == kPaper) {
-      return "papel";
-    } else {
-      return "tesoura";
-    }
   }
 
 //Função que impede que a máquina escolha pedra duas vezes seguidas
   void setMachinePlay() {
     String machinePlay = "";
-
     while (true) {
+      /*
+        Para a máquina escolher uma jogada aleatória, nós tentamos sortear um número entre 0 e 2
+        e então pegar o elemento desse índice da lista, mas nós notamos que a variação
+        era muito pouca, caia quase sempre na mesma jogada.
+        Então nós percebemos que tem uma variação de jogadas muito maior se embaralharmos
+        a lista de opções e pegar a opção de índice 0;
+     */
       plays.shuffle();
-      machinePlay = setPlayName(plays[0]);
-      machineImage = plays[0];
+      machinePlay = plays[0].playName;
+      machineImage = plays[0].imagePath;
       if (machine.selectedStones < 1) {
         machine.setPlay(machinePlay);
         break;
@@ -64,7 +55,7 @@ class _GameScreenState extends State<GameScreen> {
         machine.setPlay(machinePlay);
         machine.resetStonesCount();
         break;
-      } else {}
+      }
     }
   }
 
@@ -96,7 +87,7 @@ class _GameScreenState extends State<GameScreen> {
       player = Player();
       machine = Player();
       machineLabel = kMachineLabel;
-      playerLabel = kPlayerLabel;
+      resultLabel = kPlayerLabel;
       machineImage = kInterrogImage;
       playerImage = kInterrogImage;
       selectedButton = "";
@@ -106,6 +97,21 @@ class _GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+
+    // Lista de botões das jogadas
+
+    final buttonsList = List<PlayButton>.generate(
+      optionsList.length,
+      (index) => PlayButton(
+        imagePath: optionsList[index].imagePath,
+        ontap: () {
+          selectPlay(optionsList[index].imagePath, optionsList[index].playName);
+        },
+        color: selectedButton == optionsList[index].playName
+            ? kActiveColor
+            : kStandardColor,
+      ),
+    );
     return Scaffold(
       appBar: AppBar(
         title: const Text('jokenpô'),
@@ -114,7 +120,7 @@ class _GameScreenState extends State<GameScreen> {
         children: [
           versusCards(playerImage: playerImage, machineImage: machineImage),
           Text(
-            playerLabel,
+            resultLabel,
             style: kGameTextStyle,
             textAlign: TextAlign.center,
           ),
@@ -122,28 +128,7 @@ class _GameScreenState extends State<GameScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              playButton(
-                  imagePath: kStone,
-                  color:
-                      selectedButton == kStone ? kActiveColor : kStandardColor,
-                  ontap: () {
-                    selectPlay(kStone);
-                  }),
-              playButton(
-                  imagePath: kPaper,
-                  color:
-                      selectedButton == kPaper ? kActiveColor : kStandardColor,
-                  ontap: () {
-                    selectPlay(kPaper);
-                  }),
-              playButton(
-                  imagePath: kScissor,
-                  color: selectedButton == kScissor
-                      ? kActiveColor
-                      : kStandardColor,
-                  ontap: () {
-                    selectPlay(kScissor);
-                  }),
+              ...buttonsList,
             ],
           ),
           Expanded(
