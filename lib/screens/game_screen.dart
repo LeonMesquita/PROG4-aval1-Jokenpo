@@ -118,7 +118,7 @@ class _GameScreenState extends State<GameScreen> {
       ),
       body: Column(
         children: [
-          versusCards(playerImage: playerImage, machineImage: machineImage),
+          VersusCard(playerImage: playerImage, machineImage: machineImage),
           Text(
             resultLabel,
             style: kGameTextStyle,

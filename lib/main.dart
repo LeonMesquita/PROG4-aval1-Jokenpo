@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:prog4_aval1_jokenpo/screens/game_screen.dart';
 import 'package:prog4_aval1_jokenpo/screens/initial_screen.dart';
 
 void main() {
